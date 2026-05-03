@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo App - Homepage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #09090b;
+      --muted: #71717a;
+      --border: #e4e4e7;
+      --card-bg: #ffffff;
+      --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+      --radius: 0.5rem;
+      --btn-bg: #18181b;
+      --btn-fg: #fafafa;
+      --btn-hover: #27272a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --fg: #fafafa;
+        --muted: #a1a1aa;
+        --border: #27272a;
+        --card-bg: #18181b;
+        --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .4), 0 1px 2px -1px rgb(0 0 0 / .4);
+        --btn-bg: #fafafa;
+        --btn-fg: #18181b;
+        --btn-hover: #e4e4e7;
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--card-shadow);
+      padding: 2.5rem 2rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 2.75rem;
+      padding: 0 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: var(--btn-hover); }
+
+    .config-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: left;
+    }
+
+    .config-section h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .config-section label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .config-section input {
+      width: 100%;
+      height: 2.25rem;
+      padding: 0 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 0.8rem;
+      font-family: monospace;
+      outline: none;
+    }
+
+    .config-section input:focus {
+      border-color: var(--fg);
+    }
+
+    .user-info {
+      display: none;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      background: #f0fdf4;
+      text-align: left;
+      font-size: 0.8125rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .user-info {
+        background: #052e16;
+        border-color: #166534;
+        color: #bbf7d0;
+      }
+    }
+
+    .user-info h3 { margin-bottom: 0.5rem; font-size: 0.875rem; }
+    .user-info pre {
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Welcome / logged-in state */
+    .welcome-section {
+      display: none;
+      text-align: center;
+    }
+
+    .welcome-section h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .welcome-section .greeting {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-section .user-email {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 2.5rem;
+      padding: 0 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--fg);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-logout:hover { background: var(--border); }
+
+    /* Unauthenticated state */
+    .login-section { }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <!-- Logged-in state -->
+      <div class="welcome-section" id="welcomeSection">
+        <h1 id="welcomeTitle">Welcome!</h1>
+        <p class="greeting" id="welcomeGreeting"></p>
+        <p class="user-email" id="welcomeEmail"></p>
+        <button class="btn-logout" onclick="logout()">Sign out</button>
+        <div class="user-info" id="userInfo" style="display:block; margin-top: 1.5rem;">
+          <h3>User Profile (from token)</h3>
+          <pre id="userInfoData"></pre>
+        </div>
+      </div>
+
+      <!-- Unauthenticated state -->
+      <div class="login-section" id="loginSection">
+        <h1>Demo Application</h1>
+        <p class="subtitle">This simulates a third-party app using MyOIDC for authentication</p>
+
+        <button class="btn" id="signinBtn" onclick="startOAuth()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Sign in with MyOIDC
+        </button>
+
+        <div class="config-section">
+          <h3>Configuration</h3>
+          <label for="cfgClientId">Client ID</label>
+          <input type="text" id="cfgClientId" placeholder="Paste your client_id here" />
+
+          <label for="cfgClientSecret">Client Secret</label>
+          <input type="text" id="cfgClientSecret" placeholder="Paste your client_secret here" />
+
+          <label>Redirect URI (fixed)</label>
+          <input type="text" readonly id="cfgRedirectUri" />
+
+          <label>Auth Server</label>
+          <input type="text" id="cfgAuthServer" value="http://localhost:8000" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cookie helpers
+    function setCookie(name, value, maxAgeSec) {
+      document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSec}; SameSite=Lax`;
+    }
+
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = `${name}=; path=/; max-age=0`;
+    }
+
+    // Decode JWT payload (no verification — just for display)
+    function decodeJwt(token) {
+      try {
+        const payload = token.split('.')[1];
+        return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+      } catch { return null; }
+    }
+
+    // Set the redirect URI based on current page
+    const REDIRECT_URI = window.location.origin + '/demo-app.html';
+    document.getElementById('cfgRedirectUri').value = REDIRECT_URI;
+
+    // Check if already logged in (token in cookie)
+    function checkAuth() {
+      const token = getCookie('access_token');
+      const idToken = getCookie('id_token');
+      if (!token || !idToken) {
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('welcomeSection').style.display = 'none';
+        return;
+      }
+
+      const claims = decodeJwt(idToken);
+      if (!claims || (claims.exp && claims.exp < Date.now() / 1000)) {
+        // Token expired — clear and show login
+        deleteCookie('access_token');
+        deleteCookie('id_token');
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('welcomeSection').style.display = 'none';
+        return;
+      }
+
+      // Show welcome
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('welcomeSection').style.display = 'block';
+      document.getElementById('welcomeTitle').textContent = `Welcome, ${claims.name || claims.email}!`;
+      document.getElementById('welcomeGreeting').textContent = `You are signed in to Demo Application`;
+      document.getElementById('welcomeEmail').textContent = claims.email || '';
+      document.getElementById('userInfoData').textContent = JSON.stringify(claims, null, 2);
+    }
+
+    function logout() {
+      deleteCookie('access_token');
+      deleteCookie('id_token');
+      sessionStorage.clear();
+      window.location.reload();
+    }
+
+    function startOAuth() {
+      const clientId = document.getElementById('cfgClientId').value.trim();
+      const authServer = document.getElementById('cfgAuthServer').value.trim();
+
+      if (!clientId) {
+        alert('Please enter your Client ID in the configuration section.');
+        return;
+      }
+
+      const state = crypto.randomUUID();
+      sessionStorage.setItem('oauth_state', state);
+      sessionStorage.setItem('oauth_client_secret', document.getElementById('cfgClientSecret').value.trim());
+      sessionStorage.setItem('oauth_auth_server', authServer);
+      sessionStorage.setItem('oauth_client_id', clientId);
+
+      const authUrl = new URL(`${authServer}/o/authorize`);
+      authUrl.searchParams.set('client_id', clientId);
+      authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
+      authUrl.searchParams.set('response_type', 'code');
+      authUrl.searchParams.set('state', state);
+
+      window.location.href = authUrl.toString();
+    }
+
+    // Handle callback — check for code in URL
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const state = params.get('state');
+
+      if (!code) {
+        checkAuth();
+        return;
+      }
+
+      // Verify state
+      const savedState = sessionStorage.getItem('oauth_state');
+      if (state !== savedState) {
+        alert('State mismatch! Possible CSRF attack.');
+        return;
+      }
+
+      const clientId = sessionStorage.getItem('oauth_client_id');
+      const clientSecret = sessionStorage.getItem('oauth_client_secret');
+      const authServer = sessionStorage.getItem('oauth_auth_server');
+
+      if (!clientSecret) {
+        alert('Client secret not found. Please configure it before signing in.');
+        return;
+      }
+
+      // Exchange code for token
+      try {
+        const tokenRes = await fetch(`${authServer}/o/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            grant_type: 'authorization_code',
+            code,
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: REDIRECT_URI,
+          }),
+        });
+
+        const tokenData = await tokenRes.json();
+
+        if (!tokenRes.ok) {
+          alert(`Token exchange failed: ${tokenData.message}`);
+          return;
+        }
+
+        // Store tokens in cookies (expire in 1 hour)
+        setCookie('access_token', tokenData.access_token, tokenData.expires_in || 3600);
+        setCookie('id_token', tokenData.id_token, tokenData.expires_in || 3600);
+
+        // Clean URL and show welcome
+        window.history.replaceState({}, '', window.location.pathname);
+        checkAuth();
+      } catch (err) {
+        alert('Error exchanging code for token: ' + err.message);
+      }
+
+      // Cleanup
+      sessionStorage.removeItem('oauth_state');
+    })();
+  </script>
+</body>
+</html>

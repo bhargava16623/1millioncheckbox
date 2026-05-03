@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Application</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #09090b;
+      --muted: #71717a;
+      --border: #e4e4e7;
+      --input-bg: #ffffff;
+      --ring: #18181b;
+      --card-bg: #ffffff;
+      --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+      --radius: 0.5rem;
+      --btn-bg: #18181b;
+      --btn-fg: #fafafa;
+      --btn-hover: #27272a;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --success-fg: #166534;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --fg: #fafafa;
+        --muted: #a1a1aa;
+        --border: #27272a;
+        --input-bg: #09090b;
+        --ring: #d4d4d8;
+        --card-bg: #18181b;
+        --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .4), 0 1px 2px -1px rgb(0 0 0 / .4);
+        --btn-bg: #fafafa;
+        --btn-fg: #18181b;
+        --btn-hover: #e4e4e7;
+        --success-bg: #052e16;
+        --success-border: #166534;
+        --success-fg: #bbf7d0;
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+    }
+
+    .header { text-align: center; margin-bottom: 1.75rem; }
+
+    h1 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    input {
+      height: 2.5rem;
+      padding: 0 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      color: var(--fg);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+
+    button {
+      height: 2.5rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover { background: var(--btn-hover); }
+
+    .result {
+      display: none;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border: 1px solid var(--success-border);
+      border-radius: var(--radius);
+      background: var(--success-bg);
+      color: var(--success-fg);
+      font-size: 0.8125rem;
+      word-break: break-all;
+    }
+
+    .result h3 { font-size: 0.875rem; margin-bottom: 0.5rem; }
+    .result p { margin: 0.25rem 0; }
+    .result code { font-family: monospace; font-weight: 600; }
+
+    .error {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      background: #fef2f2;
+      color: #991b1b;
+      font-size: 0.8125rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>Register Application</h1>
+      <p class="subtitle">Register your app to get OAuth client credentials</p>
+    </div>
+
+    <form class="form" id="registerForm">
+      <div class="field">
+        <label for="displayName">Application Display Name</label>
+        <input type="text" id="displayName" name="displayName" placeholder="My Awesome App" required />
+      </div>
+
+      <div class="field">
+        <label for="applicationUrl">Application URL</label>
+        <input type="url" id="applicationUrl" name="applicationUrl" placeholder="https://myapp.com" required />
+      </div>
+
+      <div class="field">
+        <label for="redirectUri">Redirect URI (Callback URL)</label>
+        <input type="url" id="redirectUri" name="redirectUri" placeholder="https://myapp.com/auth/callback" required />
+      </div>
+
+      <button type="submit">Register Application</button>
+    </form>
+
+    <div class="error" id="error"></div>
+
+    <div class="result" id="result">
+      <h3>Application Registered Successfully</h3>
+      <p><strong>Client ID:</strong> <code id="clientId"></code></p>
+      <p><strong>Client Secret:</strong> <code id="clientSecret"></code></p>
+      <p style="margin-top: 0.75rem; color: var(--muted); font-style: italic;">
+        Save the client secret now — it won't be shown again.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const resultDiv = document.getElementById('result');
+    const errorDiv = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultDiv.style.display = 'none';
+      errorDiv.style.display = 'none';
+
+      const body = {
+        displayName: document.getElementById('displayName').value,
+        applicationUrl: document.getElementById('applicationUrl').value,
+        redirectUri: document.getElementById('redirectUri').value,
+      };
+
+      try {
+        const res = await fetch('/admin/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorDiv.textContent = data.message || 'Registration failed.';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        document.getElementById('clientId').textContent = data.clientId;
+        document.getElementById('clientSecret').textContent = data.clientSecret;
+        resultDiv.style.display = 'block';
+        form.reset();
+      } catch (err) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

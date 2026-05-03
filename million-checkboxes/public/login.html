@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Million Checkboxes - Sign In</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --border: #27272a;
+      --card-bg: #18181b;
+      --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .4);
+      --radius: 0.5rem;
+      --btn-bg: #fafafa;
+      --btn-fg: #18181b;
+      --btn-hover: #e4e4e7;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--card-shadow);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      height: 3rem;
+      padding: 0 2rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn svg { flex-shrink: 0; }
+
+    .info {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">☑️</div>
+    <h1>Million Checkboxes</h1>
+    <p class="subtitle">A collaborative experiment. Toggle checkboxes in real-time with everyone online.</p>
+
+    <a href="/auth/login" class="btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Sign in with MyOIDC
+    </a>
+
+    <p class="info">You need to sign in to toggle checkboxes.<br/>Your changes are visible to everyone in real time.</p>
+  </div>
+</body>
+</html>

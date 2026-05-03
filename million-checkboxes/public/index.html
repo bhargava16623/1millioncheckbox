@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Million Checkboxes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --border: #27272a;
+      --header-bg: #18181b;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      background: transparent;
+      color: var(--fg);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .btn-logout:hover { background: var(--border); }
+
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .stats span { font-weight: 600; color: var(--fg); }
+
+    #container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 24px);
+      gap: 3px;
+      padding: 1rem 1.5rem;
+      max-width: 100%;
+    }
+
+    #container input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: #22c55e;
+    }
+
+
+
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.75rem 1.25rem;
+      background: #ef4444;
+      color: white;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 200;
+      animation: fadeIn 0.2s;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .pagination button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      background: var(--header-bg);
+      color: var(--fg);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .pagination button:hover { background: var(--border); }
+    .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .pagination .page-info {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span>☑️</span>
+      <h1>Million Checkboxes</h1>
+    </div>
+    <div class="header-right">
+      <button class="btn-logout" id="uncheckAllBtn" onclick="uncheckAll()">Uncheck All</button>
+      <span class="user-name" id="userName"></span>
+      <a href="/auth/logout" class="btn-logout">Sign out</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div>Checked: <span id="checkedCount">0</span> / <span id="totalCount">1,000,000</span></div>
+    <div>Viewing: <span id="viewRange">0 - 0</span></div>
+    <div>Online: <span id="onlineCount">1</span></div>
+  </div>
+
+  <div class="loading" id="loading">Loading checkboxes...</div>
+  <div id="container"></div>
+
+  <div class="pagination">
+    <button id="prevBtn" onclick="changePage(-1)">← Previous</button>
+    <span class="page-info" id="pageInfo">Page 1</span>
+    <button id="nextBtn" onclick="changePage(1)">Next →</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const container = document.getElementById('container');
+    const loadingDiv = document.getElementById('loading');
+    const toast = document.getElementById('toast');
+
+    const PAGE_SIZE = 1000;
+    const TOTAL = 1_000_000;
+    let currentPage = 0;
+    let checkedTotal = 0;
+
+    // Show toast
+    function showToast(message) {
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Load user info
+    (async () => {
+      try {
+        const res = await fetch('/auth/me');
+        const user = await res.json();
+        document.getElementById('userName').textContent = user.name || user.email;
+      } catch {}
+    })();
+
+    // Socket events
+    socket.on('connect_error', (err) => {
+      if (err.message === 'Authentication required' || err.message === 'Token expired') {
+        window.location.href = '/login.html';
+      }
+    });
+
+    socket.on('server:error', (data) => {
+      showToast(data.error);
+    });
+
+    socket.on('server:checkbox:change', (data) => {
+      const { index, checked } = data;
+      const input = document.getElementById(`checkbox-${index}`);
+      if (input) {
+        input.checked = checked;
+      }
+      checkedTotal += checked ? 1 : -1;
+      document.getElementById('checkedCount').textContent = checkedTotal.toLocaleString();
+    });
+
+    socket.on('server:online-count', (count) => {
+      document.getElementById('onlineCount').textContent = count;
+    });
+
+    // Pagination
+    function changePage(direction) {
+      const maxPage = Math.ceil(TOTAL / PAGE_SIZE) - 1;
+      currentPage = Math.max(0, Math.min(maxPage, currentPage + direction));
+      loadPage(currentPage);
+    }
+
+    async function loadPage(page) {
+      const offset = page * PAGE_SIZE;
+      try {
+        const response = await fetch(`/checkboxes?offset=${offset}&count=${PAGE_SIZE}`);
+        if (response.status === 401 || response.redirected) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const data = await response.json();
+
+        renderCheckboxes(data.checkboxes, offset);
+        checkedTotal = data.checkedCount || 0;
+        document.getElementById('checkedCount').textContent = checkedTotal.toLocaleString();
+        document.getElementById('totalCount').textContent = TOTAL.toLocaleString();
+        document.getElementById('viewRange').textContent =
+          `${offset.toLocaleString()} - ${(offset + data.checkboxes.length).toLocaleString()}`;
+        document.getElementById('pageInfo').textContent =
+          `Page ${page + 1} of ${Math.ceil(TOTAL / PAGE_SIZE).toLocaleString()}`;
+
+        document.getElementById('prevBtn').disabled = page === 0;
+        document.getElementById('nextBtn').disabled = page >= Math.ceil(TOTAL / PAGE_SIZE) - 1;
+      } catch (err) {
+        loadingDiv.textContent = 'Failed to load checkboxes.';
+      }
+    }
+
+    function renderCheckboxes(states, offset) {
+      loadingDiv.style.display = 'none';
+      container.innerHTML = '';
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < states.length; i++) {
+        const globalIndex = offset + i;
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = `checkbox-${globalIndex}`;
+        input.checked = states[i] || false;
+
+        input.addEventListener('change', (e) => {
+          socket.emit('client:checkbox:change', { index: globalIndex, checked: e.target.checked });
+        });
+
+        fragment.appendChild(input);
+      }
+      container.appendChild(fragment);
+    }
+
+    // Uncheck all
+    function uncheckAll() {
+      if (!confirm('Are you sure you want to uncheck ALL checkboxes?')) return;
+      socket.emit('client:uncheck-all');
+    }
+
+    socket.on('server:uncheck-all', () => {
+      document.querySelectorAll('#container input[type="checkbox"]').forEach(cb => cb.checked = false);
+      checkedTotal = 0;
+      document.getElementById('checkedCount').textContent = '0';
+    });
+
+    // Initial load
+    window.addEventListener('load', () => loadPage(0));
+  </script>
+</body>
+</html>

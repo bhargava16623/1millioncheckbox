@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authorize</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #09090b;
+      --muted: #71717a;
+      --border: #e4e4e7;
+      --input-bg: #ffffff;
+      --ring: #18181b;
+      --card-bg: #ffffff;
+      --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+      --radius: 0.5rem;
+      --btn-bg: #18181b;
+      --btn-fg: #fafafa;
+      --btn-hover: #27272a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --fg: #fafafa;
+        --muted: #a1a1aa;
+        --border: #27272a;
+        --input-bg: #09090b;
+        --ring: #d4d4d8;
+        --card-bg: #18181b;
+        --card-shadow: 0 1px 3px 0 rgb(0 0 0 / .4), 0 1px 2px -1px rgb(0 0 0 / .4);
+        --btn-bg: #fafafa;
+        --btn-fg: #18181b;
+        --btn-hover: #e4e4e7;
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+    }
+
+    .header { text-align: center; margin-bottom: 1.75rem; }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      background: var(--fg);
+      border-radius: var(--radius);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .icon svg { color: var(--bg); }
+
+    h1 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    #appName {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    input {
+      height: 2.5rem;
+      padding: 0 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      color: var(--fg);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+
+    button {
+      height: 2.5rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover { background: var(--btn-hover); }
+
+    .error {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      background: #fef2f2;
+      color: #991b1b;
+      font-size: 0.8125rem;
+      text-align: center;
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-top: 1.25rem;
+    }
+
+    .signup-link a {
+      color: var(--fg);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h1>Sign in to <span id="appName">...</span></h1>
+      <p class="subtitle">Enter your credentials to continue</p>
+    </div>
+
+    <form class="form" id="authorizeForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit">Sign In & Authorize</button>
+    </form>
+
+    <div class="error" id="error"></div>
+
+    <div class="signup-link">
+      Don't have an account? <a id="signupLink" href="/signup.html">Create one</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const clientId = params.get('client_id');
+    const redirectUri = params.get('redirect_uri');
+    const state = params.get('state');
+    const responseType = params.get('response_type');
+
+    // Update signup link to preserve OAuth params
+    const signupLink = document.getElementById('signupLink');
+    signupLink.href = `/signup.html${window.location.search}`;
+
+    // Load app name
+    (async () => {
+      if (!clientId) return;
+      try {
+        const res = await fetch(`/o/authorize/app-info?client_id=${encodeURIComponent(clientId)}`);
+        const data = await res.json();
+        if (data.displayName) {
+          document.getElementById('appName').textContent = data.displayName;
+          document.title = `Sign in to ${data.displayName}`;
+        }
+      } catch {}
+    })();
+
+    const form = document.getElementById('authorizeForm');
+    const errorDiv = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.style.display = 'none';
+
+      const body = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        state: state || undefined,
+      };
+
+      try {
+        const res = await fetch('/o/authorize/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorDiv.textContent = data.message || 'Authorization failed.';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        // Redirect to the application's callback with the auth code
+        window.location.href = data.redirectUrl;
+      } catch (err) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
