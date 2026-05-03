@@ -106,6 +106,8 @@ App runs on `http://localhost:3000`.
 | `CLIENT_SECRET` | OAuth client secret (from registration) | `b93a09bb...` |
 | `REDIS_HOST` | Redis hostname | `localhost` |
 | `REDIS_PORT` | Redis port | `6379` |
+| `DATABASE_URL` | Database url for Postgresql DB| `postgresql://admin:admin@localhost:5432/oidc_auth` |
+| `DB_PORT` | DB port | `8000` |
 
 ## Redis Setup Instructions
 
